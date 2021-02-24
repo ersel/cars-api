@@ -3,6 +3,15 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
+
+// LOGGING MIDDLEWARE
+const logRequest = (request, response, next) => {
+    console.log(request.method, " ", request.path);
+    next();
+}
+
+app.use(logRequest);
+
 const CAR_DATABASE = [
   {
     id: 1,
@@ -30,6 +39,7 @@ const CAR_DATABASE = [
   },
 ];
 
+
 // degisiklik
 
 // ADDRES:
@@ -44,40 +54,41 @@ app.get("/cars/:carId", function (request, response) {
   const carToReturn = CAR_DATABASE.find((car) => {
     return car.id === Number(carId);
   });
-  if(!carToReturn) {
+  if (!carToReturn) {
     response.status(404).send();
   } else {
     response.send(carToReturn);
   }
 });
 
-app.get("/cars", function (request, response) {
-  /*
-        query
-        params
-    */
+app
+  .route("/cars")
+  .get(function (request, response) {
+    /*
+              query
+              params
+          */
 
-  let carsToReturn = CAR_DATABASE;
-  if (request.query.make) {
-    carsToReturn = carsToReturn.filter((car) => {
-      return car.make === request.query.make;
-    });
-  }
-  if (request.query.color) {
-    carsToReturn = carsToReturn.filter((car) => {
-      return car.color === request.query.color;
-    });
-  }
-  // console.log("BODY: ", request.body);
-  // console.log("PARAMS: ", request.params);
-  response.send(carsToReturn);
-});
-
-app.post("/cars", function (request, response) {
-  // request.body
-  console.log("body", request.body);
-  CAR_DATABASE.push(request.body);
-  response.send("OK");
-});
+    let carsToReturn = CAR_DATABASE;
+    if (request.query.make) {
+      carsToReturn = carsToReturn.filter((car) => {
+        return car.make === request.query.make;
+      });
+    }
+    if (request.query.color) {
+      carsToReturn = carsToReturn.filter((car) => {
+        return car.color === request.query.color;
+      });
+    }
+    // console.log("BODY: ", request.body);
+    // console.log("PARAMS: ", request.params);
+    response.send(carsToReturn);
+  })
+  .post(function (request, response) {
+    // request.body
+    console.log("body", request.body);
+    CAR_DATABASE.push(request.body);
+    response.send("OK");
+  });
 
 app.listen(3000); // HTTP trafigini dinle...
