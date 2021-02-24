@@ -44,7 +44,11 @@ app.get("/cars/:carId", function (request, response) {
   const carToReturn = CAR_DATABASE.find((car) => {
     return car.id === Number(carId);
   });
-  response.send(carToReturn);
+  if(!carToReturn) {
+    response.status(404).send();
+  } else {
+    response.send(carToReturn);
+  }
 });
 
 app.get("/cars", function (request, response) {
